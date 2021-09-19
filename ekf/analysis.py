@@ -22,7 +22,8 @@ def get_NIS(z_pred_gauss: MultiVarGaussian, z: ndarray):
         NIS (float): normalized innovation squared
     """
 
-    z_bar, S = z_pred_gauss
+    z_bar = z_pred_gauss.mean
+    S = z_pred_gauss.cov
     nu = z-z_bar
     S_inv = np.linalg.inv(S)
     NIS = nu.T@S_inv@nu
@@ -66,7 +67,7 @@ def get_ANIS(z_pred_gauss_data: Sequence[MultiVarGaussian],
     """
     NIS_list = np.zeros_like(z_data)
     for i in range(len(z_data)):
-        NIS_list[i]=get_NIS(z_pred_gauss_data, z_data)
+        NIS_list[i]=get_NIS(z_pred_gauss_data[i], z_data[i])
     ANIS = np.mean(NIS_list)
 
     return ANIS
@@ -88,7 +89,7 @@ def get_ANEES(x_upd_gauss_data: Sequence[MultiVarGaussian],
 
     NEES_list = np.zeros_like(x_gt_data)
     for i in range(len(x_gt_data)):
-        NEES_list[i]=get_NEES(x_upd_gauss_data, x_gt_data)
+        NEES_list[i]=get_NEES(x_upd_gauss_data[i], x_gt_data[i])
     ANEES = np.mean(NEES_list)
 
     return ANEES
