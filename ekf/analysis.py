@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import ndarray
+from numpy.core.numeric import zeros_like
 import scipy.linalg as la
 import solution
 from utils.gaussparams import MultiVarGaussian
@@ -21,8 +22,10 @@ def get_NIS(z_pred_gauss: MultiVarGaussian, z: ndarray):
         NIS (float): normalized innovation squared
     """
 
-    # TODO replace this with your own code
-    NIS = solution.analysis.get_NIS(z_pred_gauss, z)
+    z_bar, S = z_pred_gauss
+    nu = z-z_bar
+    S_inv = np.linalg.inv(S)
+    NIS = nu.T@S_inv@nu
 
     return NIS
 
@@ -40,8 +43,10 @@ def get_NEES(x_gauss: MultiVarGaussian, x_gt: ndarray):
         NEES (float): normalized estimation error squared
     """
 
-    # TODO replace this with your own code
-    NEES = solution.analysis.get_NEES(x_gauss, x_gt)
+    x_bar, P = x_gauss
+    x_error = x_bar-x_gt
+    P_inv = np.linalg.inv(P)
+    NEES = x_error.T@P_inv@x_error
 
     return NEES
 
@@ -59,9 +64,10 @@ def get_ANIS(z_pred_gauss_data: Sequence[MultiVarGaussian],
     Returns:
         ANIS (float): average normalized innovation squared
     """
-
-    # TODO replace this with your own code
-    ANIS = solution.analysis.get_ANIS(z_pred_gauss_data, z_data)
+    NIS_list = np.zeros_like(z_data)
+    for i in range(len(z_data)):
+        NIS_list[i]=get_NIS(z_pred_gauss_data, z_data)
+    ANIS = np.mean(NIS_list)
 
     return ANIS
 
@@ -80,7 +86,9 @@ def get_ANEES(x_upd_gauss_data: Sequence[MultiVarGaussian],
         ANEES (float): average normalized estimation error squared
     """
 
-    # TODO replace this with your own code
-    ANEES = solution.analysis.get_ANEES(x_upd_gauss_data, x_gt_data)
+    NEES_list = np.zeros_like(x_gt_data)
+    for i in range(len(x_gt_data)):
+        NEES_list[i]=get_NEES(x_upd_gauss_data, x_gt_data)
+    ANEES = np.mean(NEES_list)
 
     return ANEES
