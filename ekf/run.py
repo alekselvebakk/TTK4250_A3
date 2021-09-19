@@ -155,8 +155,8 @@ def main():
     # %% a: tune by hand and comment
 
     # set parameters
-    sigma_a = 2.6
-    sigma_z = 3.1
+    sigma_a = 4
+    sigma_z = 2
 
     show_ekf_output(sigma_a, sigma_z, x_gt_data, z_data, Ts, N_data)
 
